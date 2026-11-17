@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbfcf8">
+  <title>Controle do carrinho</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="controle" aria-label="Controle do carrinho">
+    <div class="direcoes" aria-label="Controle de direção">
+      <button class="direcao frente" data-comando="frente" type="button"><span class="seta">↑</span><span>Frente</span></button>
+      <button class="direcao esquerda" data-comando="esquerda" type="button"><span class="seta">←</span><span>Esquerda</span></button>
+      <button class="direcao direita" data-comando="direita" type="button"><span class="seta">→</span><span>Direita</span></button>
+      <button class="direcao re" data-comando="re" type="button"><span class="seta">↓</span><span>Ré</span></button>
+    </div>
+    <div class="movimento"><span class="indicador"></span><div><span class="legenda">COMANDO ATUAL</span><output id="movimento" aria-live="polite">Parado</output></div></div>
+    <button id="tela" type="button" aria-label="Entrar em tela cheia" title="Tela cheia">⛶</button>
+    <p id="aviso" role="status" hidden></p>
+  </main>
+</body>
+</html>
