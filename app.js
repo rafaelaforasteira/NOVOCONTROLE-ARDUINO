@@ -1,9 +1,10 @@
 'use strict';
 
-// Na prévia, os botões só mudam a interface. Para usar no carrinho,
-// mude DEMONSTRACAO para false e sirva estes arquivos pelo ESP32.
-const DEMONSTRACAO = true;
-const ENDERECO = ''; // Vazio = mesmo servidor da página. Ex.: 'http://192.168.10.108'
+// O HTML embutido no firmware habilita o envio para a própria origem.
+const DEMONSTRACAO = document.body.dataset.modo !== 'esp32';
+const conexao = document.querySelector('#conexao');
+if (!DEMONSTRACAO) conexao.textContent = 'Controle via ESP32';
+
 const nomes = { frente: 'Frente', re: 'Ré', esquerda: 'Esquerda', direita: 'Direita', parar: 'Parado' };
 const botoes = document.querySelectorAll('[data-comando]');
 
@@ -12,30 +13,47 @@ let ponteiro = null;
 let tecla = null;
 let enviando = false;
 let proximo = null;
+let paradaPendente = false;
 
-// Uma requisição por vez evita que comandos antigos ultrapassem a parada.
+// Serializa pedidos e preserva a parada mesmo se outro botão for acionado.
 async function enviar(comando) {
   if (DEMONSTRACAO) return;
-  proximo = comando;
+  if (comando === 'parar') {
+    paradaPendente = true;
+    proximo = null;
+  } else {
+    proximo = comando;
+  }
   if (enviando) return;
   enviando = true;
-  while (proximo !== null) {
-    const acao = proximo;
-    proximo = null;
+  while (paradaPendente || proximo !== null) {
+    const acao = paradaPendente ? 'parar' : proximo;
+    if (paradaPendente) paradaPendente = false;
+    else proximo = null;
+
+    const controle = new AbortController();
+    const limite = setTimeout(() => controle.abort(), 400);
     try {
-      const resposta = await fetch(ENDERECO + '/comando?acao=' + acao, {
-        cache: 'no-store', signal: AbortSignal.timeout(1000), keepalive: true
+      const resposta = await fetch('/comando?acao=' + acao, {
+        cache: 'no-store', signal: controle.signal, keepalive: true
       });
-      if (!resposta.ok) throw new Error('Sem resposta');
-
-
+      if (!resposta.ok) throw new Error('Comando recusado');
+      conexao.textContent = 'ESP32 respondeu';
     } catch {
-      console.warn('Sem conexão com o carrinho.');
-
+      conexao.textContent = acao === 'parar' ? 'Parada não confirmada' : 'Falha de comunicação';
       if (acao !== 'parar') parar();
+    } finally {
+      clearTimeout(limite);
     }
   }
   enviando = false;
+}
+
+if (!DEMONSTRACAO) {
+  // O ESP32 desliga os motores se estas renovações deixarem de chegar.
+  setInterval(() => {
+    if (!enviando && atual !== 'parar') enviar(atual);
+  }, 150);
 }
 
 function mover(comando) {
@@ -119,5 +137,3 @@ document.addEventListener('fullscreenchange', () => {
   parar();
   document.querySelector('#tela').setAttribute('aria-label', document.fullscreenElement ? 'Sair da tela cheia' : 'Entrar em tela cheia');
 });
-
-

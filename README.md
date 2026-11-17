@@ -1,16 +1,17 @@
-# Controle simples
+# Controle do carrinho
 
-Abra index.html. Não precisa instalar bibliotecas nem compilar: HTML monta a página, CSS cuida da aparência e JavaScript lê os botões e envia os comandos.
+O ESP32 serve a página com os quatro botões e recebe os comandos pelo Wi-Fi local.
 
-Segure Frente, Ré, Esquerda ou Direita para mover; solte para parar. Também funciona com as setas do teclado e com Espaço/Enter no botão focado. Escape também para. No celular, gire o aparelho; Tela cheia tenta fixar na horizontal quando o navegador permite.
+## Gravar e abrir
 
-## Conectar depois ao ESP32
+1. Abra `firmware/carrinho/carrinho.ino` na Arduino IDE com o suporte ESP32 instalado. Mantenha `web_assets.h` na mesma pasta.
+2. Preencha `ssid` e `senha` para a rede do carrinho na sua cópia local. Selecione o modelo da placa e a porta USB, então grave o sketch.
+3. Abra o Monitor Serial a 9600 baud e copie o endereço HTTP exibido após a conexão.
+4. Conecte o celular ou computador à mesma rede e abra esse endereço no navegador.
+5. Com as rodas suspensas, pressione e solte cada botão. Confira frente, ré, esquerda, direita e parada. Faça o teste de perda de comunicação em bancada.
 
-1. Em app.js, altere `DEMONSTRACAO = true` para `false`.
-2. Sirva index.html, styles.css e app.js pelo servidor HTTP do carrinho. O endereço vazio usa o próprio servidor. Para outro destino, ajuste ENDERECO e configure CORS no firmware; HTTPS pode bloquear acesso a HTTP.
-3. O protocolo é o mesmo do projeto anterior: `GET /comando?acao=frente`, `re`, `esquerda`, `direita` ou `parar`.
+A página aberta diretamente do repositório ou por um servidor estático roda em demonstração. A página servida pelo ESP32 envia `GET /comando?acao=frente|re|esquerda|direita|parar` para a própria origem. Também é possível usar as setas do teclado. Use um único controle por vez.
 
-A demonstração não faz requisições para o carrinho. O firmware não foi alterado. Uma perda de rede pode impedir a entrega da parada: acrescente ao firmware uma parada automática por tempo sem comandos antes do uso físico e adapte a página para repetir comandos nesse intervalo, se necessário.
+Ao segurar um botão, a página tenta renovar o comando a cada 150 ms. Ao soltar, envia `parar`. O firmware verifica se passaram 750 ms desde o último comando válido de movimento e desliga as saídas da ponte H quando esse prazo expira ou quando o ESP32 perde o Wi-Fi. Essa verificação roda no loop do firmware. As rotinas de motor e farol são as da primeira versão.
 
-Esta pasta é independente da página original com joystick.
-
+Depois de editar HTML, CSS ou JavaScript, execute `python3 scripts/embed_web.py` e regrave a placa para atualizar a página embutida.

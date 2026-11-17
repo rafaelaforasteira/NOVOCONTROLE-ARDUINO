@@ -21,3 +21,8 @@ output{display:block;font-size:24px;font-weight:600;min-width:110px}
 #aviso{position:absolute;bottom:10px;left:24px;right:24px;text-align:center;color:#64735d;font-size:12px}
 @media(orientation:landscape) and (max-height:500px){.controle{gap:clamp(30px,10vw,100px)}.direcoes{--tamanho:clamp(52px,23svh,100px);gap:8px}.direcao{border-radius:15px}.seta{font-size:30px}.direcao>span:last-child{font-size:11px}}
 @media(orientation:portrait){.controle{flex-direction:column;align-items:flex-start;justify-content:center;gap:40px;padding-left:max(20px,env(safe-area-inset-left))}.direcoes{--tamanho:clamp(64px,25vw,110px);gap:10px}.movimento{margin-left:10px}}
+
+.informacoes{min-width:0}
+.instrucao,#conexao{font-size:13px;line-height:1.35;margin:12px 0 0}
+#conexao{font-weight:600}
+@media(orientation:portrait){.movimento{margin-left:0}}

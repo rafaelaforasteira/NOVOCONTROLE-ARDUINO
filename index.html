@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
-<body>
+<body data-modo="demo">
   <main class="controle" aria-label="Controle do carrinho">
     <div class="direcoes" aria-label="Controle de direção">
       <button class="direcao frente" data-comando="frente" type="button"><span class="seta">↑</span><span>Frente</span></button>
@@ -16,7 +16,11 @@
       <button class="direcao direita" data-comando="direita" type="button"><span class="seta">→</span><span>Direita</span></button>
       <button class="direcao re" data-comando="re" type="button"><span class="seta">↓</span><span>Ré</span></button>
     </div>
-    <div class="movimento"><span class="indicador"></span><div><span class="legenda">COMANDO ATUAL</span><output id="movimento" aria-live="polite">Parado</output></div></div>
+    <div class="informacoes">
+      <div class="movimento"><span class="indicador"></span><div><span class="legenda">COMANDO ATUAL</span><output id="movimento" aria-live="polite">Parado</output></div></div>
+      <p class="instrucao">Segure para mover. Solte para parar.</p>
+      <p id="conexao" role="status">Modo demonstração</p>
+    </div>
     <button id="tela" type="button" aria-label="Entrar em tela cheia" title="Tela cheia">⛶</button>
     <p id="aviso" role="status" hidden></p>
   </main>
